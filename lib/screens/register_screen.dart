@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Set AppBar background to the deep blue
         backgroundColor: Theme.of(context).primaryColorDark,
         elevation: 0,
-        toolbarHeight: 0, // Hide the default app bar space
+        toolbarHeight: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -20,13 +19,13 @@ class LoginScreen extends StatelessWidget {
             Container(
               height: 200,
               padding: const EdgeInsets.all(30.0),
-              color: Theme.of(context).primaryColorDark, // Deep blue background
+              color: Theme.of(context).primaryColorDark,
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Login in to your',
+                    'Sign up to your',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 28,
@@ -43,7 +42,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Enter your email and password to get your account',
+                    'Enter your personal details to create your account',
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
@@ -53,12 +52,21 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
 
-            // --- Login Form Section ---
+            // --- Registration Form Section ---
             Padding(
               padding: const EdgeInsets.all(30.0),
               child: Column(
                 children: <Widget>[
-                  // Email Input Field
+                  // Full Name
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Enter your full name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Email
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Enter your email',
@@ -68,7 +76,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Password Input Field
+                  // Password
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Enter your password',
@@ -76,32 +84,50 @@ class LoginScreen extends StatelessWidget {
                     ),
                     obscureText: true,
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
 
-                  // Login Button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to the Home Screen
-                      Navigator.of(context).pushReplacementNamed('/home');
-                    },
-                    child: const Text('Login'),
+                  // Country/Region
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Country/Region',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                   const SizedBox(height: 20),
 
-                  // "Don't have an account?" text
+                  // Education Level
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Education',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Signup Button
+                  ElevatedButton(
+                    onPressed: () {
+                      // In a real app, this would register the user, then navigate
+                      Navigator.of(context).pushReplacementNamed('/home');
+                    },
+                    child: const Text('Signup'),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // "Already have an account?" text
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed('/register');
+                      Navigator.of(context).pushNamed('/login');
                     },
                     child: const Text.rich(
                       TextSpan(
-                        text: "Don't have an account? ",
+                        text: "Already have an account? ",
                         style: TextStyle(color: Colors.black54),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Sign up',
+                            text: 'Login',
                             style: TextStyle(
-                              color: Color(0xFF5C6BC0), // Accent Blue
+                              color: Color(0xFF5C6BC0),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
