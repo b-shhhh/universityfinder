@@ -40,7 +40,8 @@ class HomeScreen extends StatelessWidget {
                   Navigator.of(context).pushNamed('/ai_finder');
                 },
                 icon: const Icon(Icons.psychology_outlined, color: Colors.blue),
-                label: const Text('Try out our AI to find your course →', style: TextStyle(color: Colors.blue)),
+                label: const Text('Try out our AI to find your course →',
+                    style: TextStyle(color: Colors.blue)),
               ),
             ),
             const SizedBox(height: 20),
@@ -101,3 +102,6 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
