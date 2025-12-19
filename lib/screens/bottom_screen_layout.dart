@@ -29,11 +29,9 @@ class _BottomscreenLayoutState extends State<BottomscreenLayout> {
           items:const[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: 'Home',),
+              label: 'Explore',),
             BottomNavigationBarItem(icon: Icon(Icons.shopping_bag),
-                label: 'Cart'),
-            BottomNavigationBarItem(icon: Icon(Icons.person),
-                label: 'Profile'),
+                label: 'Assignment_sharp'),
             BottomNavigationBarItem(icon: Icon(Icons.person),
                 label: 'Profile'),
 
