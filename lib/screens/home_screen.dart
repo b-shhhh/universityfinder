@@ -19,7 +19,6 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // --- Search Bar ---
             TextFormField(
               decoration: InputDecoration(
                 hintText: 'Search universities, courses...',
@@ -34,7 +33,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // --- AI Feature Button ---
             Center(
               child: TextButton.icon(
                 onPressed: () {
@@ -54,7 +52,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Country Flags Row
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
