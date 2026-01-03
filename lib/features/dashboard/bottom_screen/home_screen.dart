@@ -64,14 +64,13 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // --- In-Demand Courses Section ---
+
             const Text(
               'In-Demand Courses',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            // Courses List
             const Row(
               children: [
                 Expanded(child: CourseCard(title: 'Computer Science')),
@@ -81,14 +80,12 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // --- Top Universities Section ---
             const Text(
               'Top Universities',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            // University Cards
             const UniversityCard(
               name: 'Stanford University',
               location: 'Stanford, CA, U.S.',

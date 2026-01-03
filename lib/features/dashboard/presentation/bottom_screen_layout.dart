@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:universityfinder/screens/bottom_screen/application_screen.dart';
-import 'package:universityfinder/screens/bottom_screen/profile_screen.dart';
-import 'package:universityfinder/screens/bottom_screen/home_screen.dart';
-import 'package:universityfinder/screens/home_screen.dart';
+import 'package:universityfinder/features/dashboard/bottom_screen/application_screen.dart';
+import 'package:universityfinder/features/dashboard/bottom_screen/home_screen.dart';
+import 'package:universityfinder/features/dashboard/bottom_screen/profile_screen.dart';
 
 class BottomscreenLayout extends StatefulWidget {
   const BottomscreenLayout({super.key});
@@ -14,29 +13,28 @@ class BottomscreenLayout extends StatefulWidget {
 class _BottomscreenLayoutState extends State<BottomscreenLayout> {
   int _selectedIndex=0;
   List<Widget> lstBottomScreen=[
-    const HomeScreen()
-    const Applicat
-
+   const HomeScreen(),
+    const ApplicationScreen(),
+    const ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Bottom Layout Screen"),),
       body: lstBottomScreen[_selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items:const[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.explore),
               label: 'Explore',),
-            BottomNavigationBarItem(icon: Icon(Icons.shopping_bag),
-                label: 'Assignment_sharp'),
+            BottomNavigationBarItem(icon: Icon(Icons.assignment_sharp),
+                label: 'Application'),
             BottomNavigationBarItem(icon: Icon(Icons.person),
                 label: 'Profile'),
 
           ],
-          backgroundColor: Colors.pink,
+          backgroundColor: Colors.blueAccent,
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.black,
           currentIndex: _selectedIndex,
