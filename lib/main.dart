@@ -1,16 +1,21 @@
+
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'app.dart';
-import 'core/constants/hive_boxes.dart';
+import 'core/services/hive/hive_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Initialize Hive
-  await Hive.initFlutter();
+  final hiveService = HiveService();
+  await hiveService.init();
 
-  // ✅ Open the box BEFORE running the app
-  await Hive.openBox(HiveBoxes.userBox);
-
-  runApp(const MyApp());
+  runApp(
+    ProviderScope(
+      overrides: [
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
