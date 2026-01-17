@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:universityfinder/features/auth/presentation/pages/register_screen.dart';
 import 'package:universityfinder/features/dashboard/bottom_screen/home_screen.dart';
 
@@ -23,23 +25,55 @@ class LoginScreen extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() async {
+  // API call for login
+  Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
-    // Simulate API login
-    await Future.delayed(const Duration(seconds: 2));
+    final url = Uri.parse('http://10.0.2.2:5050/api/login'); // Android emulator
+    final body = jsonEncode({
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
+    });
 
-    setState(() => _isLoading = false);
-
-    // Navigate to Dashboard
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
       );
+
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['success'] == true) {
+          // Navigate to HomeScreen
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          }
+        } else {
+          _showError(data['message'] ?? 'Login failed');
+        }
+      } else {
+        _showError('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showError('Error: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -58,7 +92,6 @@ class LoginScreen extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo
                   Center(
                     child: Image.asset(
                       'assets/images/uniguide_logo.png',
@@ -66,8 +99,6 @@ class LoginScreen extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 40),
-
-                  // Title
                   Text(
                     "Welcome Back",
                     style: TextStyle(
@@ -87,7 +118,6 @@ class LoginScreen extends State<LoginPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),
-
                   // Email Field
                   TextFormField(
                     controller: _emailController,
@@ -110,7 +140,6 @@ class LoginScreen extends State<LoginPage> {
                     },
                   ),
                   const SizedBox(height: 20),
-
                   // Password Field
                   TextFormField(
                     controller: _passwordController,
@@ -131,9 +160,7 @@ class LoginScreen extends State<LoginPage> {
                           _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                           color: Colors.white70,
                         ),
-                        onPressed: () {
-                          setState(() => _obscurePassword = !_obscurePassword);
-                        },
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
                     validator: (value) {
@@ -143,7 +170,6 @@ class LoginScreen extends State<LoginPage> {
                     },
                   ),
                   const SizedBox(height: 30),
-
                   // Login Button
                   SizedBox(
                     height: 55,
@@ -166,8 +192,6 @@ class LoginScreen extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Divider
                   Row(
                     children: [
                       Expanded(child: Divider(color: Colors.white54)),
@@ -178,8 +202,6 @@ class LoginScreen extends State<LoginPage> {
                     ],
                   ),
                   const SizedBox(height: 20),
-
-                  // Register Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -193,10 +215,7 @@ class LoginScreen extends State<LoginPage> {
                         },
                         child: const Text(
                           "Register",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       )
                     ],
