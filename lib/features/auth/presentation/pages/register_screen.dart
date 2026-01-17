@@ -1,152 +1,212 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import '../../../../core/constants/hive_boxes.dart';
-import '../../../../core/routes/app_routes.dart';
+import 'package:universityfinder/features/auth/presentation/pages/login_screen.dart';
+import 'package:universityfinder/features/dashboard/bottom_screen/home_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
-
-  static const Color bgColor = Color(0xFF062A8F);
-  static const Color buttonColor = Color(0xFF060A6F);
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<SignupPage> createState() => RegisterScreen();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  final nameController = TextEditingController();
+class RegisterScreen extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
+
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final countryController = TextEditingController();
+  final dobController = TextEditingController();
+  final phoneController = TextEditingController();
   final educationController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  String? _registerError;
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    countryController.dispose();
-    educationController.dispose();
-    super.dispose();
-  }
+  String? selectedGender;
+  final List<String> genders = ['Male', 'Female', 'Other'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: RegisterScreen.bgColor,
+      backgroundColor: const Color(0xFF082A78),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Form(
+            key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20),
-                Image.asset('assets/images/uniguide_logo.png', height: 80),
-                const SizedBox(height: 15),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Sign up to your',
-                      style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
-                ),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Account',
-                      style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Enter your personal details to create your account',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const SizedBox(height: 40),
-                _buildInputField('Full Name', nameController),
-                const SizedBox(height: 15),
-                _buildInputField('Email', emailController, keyboardType: TextInputType.emailAddress),
-                const SizedBox(height: 15),
-                _buildInputField('Password', passwordController, obscureText: true),
-                const SizedBox(height: 15),
-                _buildInputField('Country / Region', countryController),
-                const SizedBox(height: 15),
-                _buildInputField('Education', educationController),
-                const SizedBox(height: 20),
-
-                if (_registerError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      _registerError!,
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                // Logo
+                Row(
+                  children: const [
+                    Icon(Icons.school, color: Colors.white, size: 28),
+                    SizedBox(width: 8),
+                    Text(
+                      "UniGuide",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+
+                // Title
+                const Text(
+                  "Create Your Account",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Enter your details to get started",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 32),
 
+                // Fields
+                buildField("First Name", firstNameController),
+                const SizedBox(height: 16),
+                buildField("Last Name", lastNameController),
+                const SizedBox(height: 16),
+                buildField("Email", emailController, keyboard: TextInputType.emailAddress),
+                const SizedBox(height: 16),
+
+                // DOB + Gender
+                Row(
+                  children: [
+                    Expanded(
+                      child: buildField(
+                        "MM/DD/YYYY",
+                        dobController,
+                        readOnly: true,
+                        onTap: () async {
+                          final date = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime(2000),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                          );
+                          if (date != null) {
+                            dobController.text = "${date.month}/${date.day}/${date.year}";
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        dropdownColor: const Color(0xFF082A78),
+                        value: selectedGender,
+                        hint: const Text(
+                          "Gender",
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        iconEnabledColor: Colors.white,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: inputDecoration(),
+                        items: genders
+                            .map((g) => DropdownMenuItem(
+                          value: g,
+                          child: Text(g),
+                        ))
+                            .toList(),
+                        onChanged: (v) => setState(() => selectedGender = v),
+                        validator: (v) => v == null ? "Required" : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                buildField("Phone", phoneController, keyboard: TextInputType.phone),
+                const SizedBox(height: 16),
+                buildField("Education", educationController),
+                const SizedBox(height: 16),
+
+                // Password
+                buildPasswordField(
+                  "Password",
+                  passwordController,
+                  obscurePassword,
+                      () => setState(() => obscurePassword = !obscurePassword),
+                ),
+                const SizedBox(height: 16),
+
+                // Confirm Password
+                buildPasswordField(
+                  "Confirm Password",
+                  confirmPasswordController,
+                  obscureConfirmPassword,
+                      () => setState(() => obscureConfirmPassword = !obscureConfirmPassword),
+                  confirm: true,
+                ),
+                const SizedBox(height: 32),
+
+                // Signup Button
                 SizedBox(
-                  width: double.infinity,
-                  height: 55,
+                  height: 54,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        // ✅ Use already opened box
-                        var box = Hive.box(HiveBoxes.userBox);
-
-                        await box.put('currentUser', {
-                          'name': nameController.text,
-                          'email': emailController.text,
-                          'password': passwordController.text,
-                          'country': countryController.text,
-                          'education': educationController.text,
-                        });
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('User Registered Successfully')),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // Navigate to HomeScreen after signup
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const HomeScreen()),
                         );
-
-                        Navigator.pushReplacementNamed(context, AppRoutes.login);
-                      } catch (e) {
-                        setState(() => _registerError = 'Failed to save user: $e');
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: RegisterScreen.buttonColor,
-                      elevation: 0,
+                      backgroundColor: const Color(0xFF4A8DFF),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                     child: const Text(
-                      'Sign Up',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                      "Sign Up",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
 
-                const SizedBox(height: 15),
-
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.login);
-                  },
-                  child: const Text.rich(
-                    TextSpan(
-                      text: "Already have an account? ",
-                      style: TextStyle(color: Colors.white70),
-                      children: [
-                        TextSpan(
-                          text: 'Login',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                // Already have an account
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account? ", style: TextStyle(color: Colors.white70)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const LoginPage()),
+                          );
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 15),
               ],
             ),
           ),
@@ -155,28 +215,67 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildInputField(String hint, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text, bool obscureText = false}) {
+  // Normal Field
+  Widget buildField(
+      String hint,
+      TextEditingController controller, {
+        TextInputType keyboard = TextInputType.text,
+        bool readOnly = false,
+        VoidCallback? onTap,
+      }) {
     return TextFormField(
       controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black45),
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.white70),
+      keyboardType: keyboard,
+      readOnly: readOnly,
+      onTap: onTap,
+      style: const TextStyle(color: Colors.white),
+      decoration: inputDecoration(hint: hint),
+      validator: (v) => v == null || v.isEmpty ? "Required" : null,
+    );
+  }
+
+  // Password Field
+  Widget buildPasswordField(
+      String hint,
+      TextEditingController controller,
+      bool obscure,
+      VoidCallback toggle, {
+        bool confirm = false,
+      }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.white),
+      decoration: inputDecoration(hint: hint).copyWith(
+        suffixIcon: IconButton(
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: Colors.white70),
+          onPressed: toggle,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.black),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       ),
+      validator: (v) {
+        if (v == null || v.isEmpty) return "Required";
+        if (confirm && v != passwordController.text) return "Passwords do not match";
+        return null;
+      },
+    );
+  }
+
+  // Input Decoration
+  InputDecoration inputDecoration({String? hint}) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white70),
+      filled: true,
+      fillColor: const Color(0xFF0A3B9E),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Colors.white54),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
     );
   }
 }

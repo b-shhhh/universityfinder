@@ -1,168 +1,211 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import '../../../../core/constants/hive_boxes.dart';
-import '../../../../core/routes/app_routes.dart';
+import 'package:universityfinder/features/auth/presentation/pages/register_screen.dart';
+import 'package:universityfinder/features/dashboard/bottom_screen/home_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
-  static const Color buttonColor = Color(0xFF060A6F);
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginPage> createState() => LoginScreen();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  String? _loginError;
+class LoginScreen extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  void _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    // Simulate API login
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() => _isLoading = false);
+
+    // Navigate to Dashboard
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Colors.white;
+    final secondaryTextColor = Colors.white70;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF062A8F),
+      backgroundColor: Colors.blue[900],
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 40),
-                Image.asset('assets/images/uniguide_logo.png', height: 60),
-                const SizedBox(height: 40),
-                const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Login in to your',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold))),
-                const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Account',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold))),
-                const SizedBox(height: 12),
-                const Text(
-                  'Enter your email and password to get access to your account',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const SizedBox(height: 40),
-                _buildInputField(
-                  'Enter your email',
-                  emailController,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 20),
-                _buildInputField(
-                  'Enter your password',
-                  passwordController,
-                  obscureText: true,
-                  errorText: _loginError,
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final email = emailController.text.trim();
-                      final password = passwordController.text.trim();
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Logo
+                  Center(
+                    child: Image.asset(
+                      'assets/images/uniguide_logo.png',
+                      height: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
 
-                      try {
-                        // ✅ Use already opened box
-                        var box = Hive.box(HiveBoxes.userBox);
+                  // Title
+                  Text(
+                    "Welcome Back",
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Sign in to continue",
+                    style: TextStyle(
+                      color: secondaryTextColor,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
 
-                        // ✅ Read saved user Map
-                        final user = box.get('currentUser') as Map?;
-
-                        if (user != null &&
-                            user['email'] == email &&
-                            user['password'] == password) {
-                          setState(() => _loginError = null);
-                          Navigator.pushReplacementNamed(context, AppRoutes.home);
-                        } else {
-                          setState(() => _loginError = 'Invalid email or password');
-                        }
-                      } catch (e) {
-                        setState(() => _loginError = 'Error reading user: $e');
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: LoginScreen.buttonColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  // Email Field
+                  TextFormField(
+                    controller: _emailController,
+                    style: TextStyle(color: textColor),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: secondaryTextColor),
+                      prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
+                      filled: true,
+                      fillColor: Colors.blue[800],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
                       ),
-                      elevation: 0,
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return "Please enter your email";
+                      if (!value.contains('@')) return "Enter a valid email";
+                      return null;
+                    },
                   ),
-                ),
-                const SizedBox(height: 30),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.register);
-                  },
-                  child: const Text.rich(
-                    TextSpan(
-                      text: "Don't have an account? ",
-                      style: TextStyle(color: Colors.white70),
-                      children: [
-                        TextSpan(
-                          text: 'Signup',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  const SizedBox(height: 20),
+
+                  // Password Field
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    style: TextStyle(color: textColor),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: TextStyle(color: secondaryTextColor),
+                      prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                      filled: true,
+                      fillColor: Colors.blue[800],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          color: Colors.white70,
                         ),
-                      ],
+                        onPressed: () {
+                          setState(() => _obscurePassword = !_obscurePassword);
+                        },
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return "Enter password";
+                      if (value.length < 6) return "Password must be at least 6 characters";
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Login Button
+                  SizedBox(
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.blue[900],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 4,
+                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.blue)
+                          : const Text(
+                        "Login",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 20),
+
+                  // Divider
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.white54)),
+                      const SizedBox(width: 8),
+                      Text("OR", style: TextStyle(color: Colors.white70)),
+                      const SizedBox(width: 8),
+                      Expanded(child: Divider(color: Colors.white54)),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Register Link
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Don't have an account? ", style: TextStyle(color: secondaryTextColor)),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const SignupPage()),
+                          );
+                        },
+                        child: const Text(
+                          "Register",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildInputField(
-      String hint, TextEditingController controller,
-      {bool obscureText = false, String? errorText, TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black45),
-        errorText: errorText,
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.white54),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.white),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       ),
     );
   }

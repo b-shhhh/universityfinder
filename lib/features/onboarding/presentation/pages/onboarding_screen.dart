@@ -102,7 +102,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (!isLastPage)
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacementNamed('/login');
+                        Navigator.of(context).pushReplacementNamed('/register');
                       },
                       child: const Text("Skip", style: TextStyle(color: Colors.black54)),
                     ),

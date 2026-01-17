@@ -1,39 +1,32 @@
-import 'package:hive/hive.dart';
-import 'package:universityfinder/features/auth/data/models/user_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/common_provider.dart';
+import '../../data/datasources/local/auth_local_datasource.dart';
+import '../../data/datasources/remote/auth_remote_datasource.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../data/repositories/auth_repositoryimpl.dart';
+import '../state/auth_state.dart';
+import '../view model/auth_viewmodel.dart';
 
-class AuthRepository {
-  static const String _boxName = 'usersBox';
+// 1️⃣ Local datasource
+final authLocalDatasourceProvider = Provider<IAuthLocalDatasource>((ref) {
+  final hiveService = ref.read(hiveServiceProvider);
+  return AuthLocalDatasource(hiveService);
+});
 
-  Future<Box> _openBox() async {
-    return await Hive.openBox(_boxName);
-  }
+// 2️⃣ Remote datasource
+final authRemoteDatasourceProvider = Provider<IAuthRemoteDatasource>((ref) {
+  final localDatasource = ref.read(authLocalDatasourceProvider);
+  return AuthRemoteDatasource(localDatasource);
+});
 
-  Future<bool> register(UserModel user) async {
-    final box = await _openBox();
+// 3️⃣ Repository
+final authRepositoryProvider = Provider<IAuthRepository>((ref) {
+  final remote = ref.read(authRemoteDatasourceProvider);
+  final local = ref.read(authLocalDatasourceProvider);
+  return AuthRepositoryImpl(remote, local); // ✅ Returns IAuthRepository
+});
 
-    final exists = box.values.any((u) => u['email'] == user.email);
-    if (exists) return false;
-
-    await box.add(user.toMap());
-    return true;
-  }
-
-  Future<bool> login(UserModel user) async {
-    final box = await _openBox();
-
-    final match = box.values.any(
-          (u) => u['email'] == user.email && u['password'] == user.password,
-    );
-    return match;
-  }
-
-  Future<UserModel?> getUserByEmail(String email) async {
-    final box = await _openBox();
-    try {
-      final map = box.values.firstWhere((u) => u['email'] == email);
-      return UserModel.fromMap(Map<String, dynamic>.from(map));
-    } catch (e) {
-      return null;
-    }
-  }
-}
+// 4️⃣ ViewModel
+final authViewModelProvider = NotifierProvider<AuthViewModel, AuthState>(
+      () => AuthViewModel(),
+);
