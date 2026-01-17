@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/country_flag.dart';
 import '../widgets/course_card.dart';
 import '../widgets/university_card.dart';
+import '../widgets/country_flag.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,7 +40,8 @@ class HomeScreen extends StatelessWidget {
                   Navigator.of(context).pushNamed('/ai_finder');
                 },
                 icon: const Icon(Icons.psychology_outlined, color: Colors.blue),
-                label: const Text('Try out our AI to find your course →', style: TextStyle(color: Colors.blue)),
+                label: const Text('Try out our AI to find your course →',
+                    style: TextStyle(color: Colors.blue)),
               ),
             ),
             const SizedBox(height: 20),
@@ -63,14 +64,13 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // --- In-Demand Courses Section ---
+
             const Text(
               'In-Demand Courses',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            // Courses List
             const Row(
               children: [
                 Expanded(child: CourseCard(title: 'Computer Science')),
@@ -80,14 +80,12 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // --- Top Universities Section ---
             const Text(
               'Top Universities',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            // University Cards
             const UniversityCard(
               name: 'Stanford University',
               location: 'Stanford, CA, U.S.',
@@ -100,19 +98,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      // --- Bottom Navigation Bar ---
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: 'Courses'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
       ),
     );
   }
