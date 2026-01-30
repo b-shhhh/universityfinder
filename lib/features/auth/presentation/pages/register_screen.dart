@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:universityfinder/features/auth/presentation/pages/login_screen.dart';
 import 'package:universityfinder/features/dashboard/bottom_screen/home_screen.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -26,6 +28,51 @@ class RegisterScreen extends State<SignupPage> {
 
   String? selectedGender;
   final List<String> genders = ['Male', 'Female', 'Other'];
+
+  bool _isLoading = false; // for loading indicator
+
+  Future<void> registerUser() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final url = Uri.parse('http://10.0.2.2:3000/auth/register'); // replace with your backend URL
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "firstName": firstNameController.text,
+          "lastName": lastNameController.text,
+          "email": emailController.text,
+          "password": passwordController.text,
+          "dob": dobController.text,
+          "gender": selectedGender,
+          "phone": phoneController.text,
+          "education": educationController.text,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Navigate to HomeScreen after successful signup
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        final error = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error['message'] ?? 'Registration failed')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,22 +202,16 @@ class RegisterScreen extends State<SignupPage> {
                 SizedBox(
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Navigate to HomeScreen after signup
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const HomeScreen()),
-                        );
-                      }
-                    },
+                    onPressed: _isLoading ? null : registerUser,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4A8DFF),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
                       "Sign Up",
                       style: TextStyle(
                         fontSize: 20,
