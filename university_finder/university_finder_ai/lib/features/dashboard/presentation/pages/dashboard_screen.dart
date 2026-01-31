@@ -1,7 +1,39 @@
 import 'package:flutter/material.dart';
+import '../../../../common/navigation_bar.dart';
+import '../../../dashboard/presentation/pages/bottom screen/application_page.dart';
+import '../../../dashboard/presentation/pages/bottom screen/profile_page.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int _currentIndex = 0; // track the selected tab
+
+  void _onNavTap(int index) {
+    if (index == _currentIndex) return; // already on this tab
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    if (index == 1) {
+      // Navigate to Application Page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ApplicationPage()),
+      );
+    } else if (index == 2) {
+      // Navigate to Profile Page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilePage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +49,7 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
+            // Your existing dashboard UI here
             TextField(
               decoration: InputDecoration(
                 hintText: 'Search universities, courses...',
@@ -28,8 +60,6 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-
-            // AI Suggestion Button
             ElevatedButton.icon(
               onPressed: () {},
               icon: const Icon(Icons.auto_awesome),
@@ -41,8 +71,6 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Popular Destinations
             const Text('Popular Destinations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Row(
@@ -54,8 +82,6 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-
-            // In-Demand Courses
             const Text('In-Demand Courses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Wrap(
@@ -66,8 +92,6 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-
-            // Top Universities
             const Text('Top Universities', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Column(
@@ -79,13 +103,17 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: MyNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onNavTap,
+      ),
     );
   }
 
   Widget _flagIcon(String country) {
     return Column(
       children: [
-        CircleAvatar(radius: 24, child: Text(country[0])), // Replace with flag image
+        CircleAvatar(radius: 24, child: Text(country[0])), // Replace with flag image later
         const SizedBox(height: 4),
         Text(country),
       ],

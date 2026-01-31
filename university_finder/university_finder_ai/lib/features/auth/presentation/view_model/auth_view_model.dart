@@ -3,7 +3,12 @@ import '../../domain/entities/auth_entity.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  final AuthRepositoryImpl _repository = AuthRepositoryImpl();
+  late final AuthRepositoryImpl _repository;
+
+  // 1️⃣ Add a constructor to inject a repository (optional)
+  AuthViewModel({AuthRepositoryImpl? repository}) {
+    _repository = repository ?? AuthRepositoryImpl();
+  }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;

@@ -1,6 +1,7 @@
 // presentation/pages/bottom_screen/application_page.dart
 import 'package:flutter/material.dart';
 
+
 class ApplicationPage extends StatelessWidget {
   const ApplicationPage({super.key});
 
