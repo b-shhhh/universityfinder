@@ -1,51 +1,29 @@
-// lib/app.dart
-
 import 'package:flutter/material.dart';
-import 'screens/splash_screen.dart';
-import 'screens/onboarding_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
-import 'screens/home_screen.dart';
+import 'package:universityfinder/features/dashboard/bottom_screen/home_screen.dart';
+import 'theme/theme.dart';
+import 'features/splash/presentation/pages/splash_screen.dart';
+import 'features/onboarding/presentation/pages/onboarding_screen.dart';
+import 'features/auth/presentation/pages/login_screen.dart';
+import 'features/auth/presentation/pages/register_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  static const MaterialColor primaryBlue = MaterialColor(
-    0xFF1A237E,
-    <int, Color>{
-      900: Color(0xFF1A237E),
-    },
-  );
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'UniGuide',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: primaryBlue,
-        scaffoldBackgroundColor: Colors.white,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF5C6BC0), // Accent blue
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
+      theme: getApplicationTheme(),
+      // darkTheme: getDarkTheme(), // only if you define it
+      themeMode: ThemeMode.system,
       initialRoute: '/',
-      // Define all your routes here
       routes: {
-        '/': (context) => const SplashScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/': (_) => const SplashScreen(),
+        '/onboarding': (_) => OnboardingScreen(), // remove const if constructor not const
+        '/login': (_) => LoginPage(),
+        '/register': (_) => SignupPage(),
+        '/home': (_) => HomeScreen(),
       },
     );
   }
